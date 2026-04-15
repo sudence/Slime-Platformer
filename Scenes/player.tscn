@@ -1,0 +1,238 @@
+[gd_scene format=3 uid="uid://bw2px8lwslavq"]
+
+[ext_resource type="Script" uid="uid://cc2lgflxl8uaw" path="res://Scripts/Main/player.gd" id="1_v0iea"]
+[ext_resource type="Texture2D" uid="uid://bypuf8hw4ghkq" path="res://Sprites/Blobguy-Sheet.png" id="2_cvnsp"]
+[ext_resource type="Script" uid="uid://dj7p2rfknbnh5" path="res://Scripts/Components/input_component.gd" id="3_6t5aa"]
+[ext_resource type="Script" uid="uid://beagfs6lqxjrl" path="res://Scripts/Components/move_component.gd" id="4_vgqql"]
+[ext_resource type="Script" uid="uid://b3k81qidkg1hf" path="res://Scripts/Components/health_component.gd" id="5_fkybt"]
+[ext_resource type="Script" uid="uid://cn8olyrlmyw5x" path="res://Scripts/Components/animation_component.gd" id="6_x3wgy"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_v0iea"]
+radius = 4.0
+
+[sub_resource type="Animation" id="Animation_3smsa"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_f1ek2"]
+resource_name = "fall"
+length = 1.00005
+step = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_x3wgy"]
+resource_name = "idle"
+length = 0.6250125
+loop_mode = 1
+step = 0.125
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.125, 0.25, 0.375, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4]
+}
+
+[sub_resource type="Animation" id="Animation_tx1dd"]
+resource_name = "jump"
+length = 0.1250125
+step = 0.125
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [12]
+}
+
+[sub_resource type="Animation" id="Animation_8erm5"]
+resource_name = "run"
+length = 0.6250125
+loop_mode = 1
+step = 0.125
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.125, 0.25, 0.375, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [5, 6, 7, 8, 9]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_f1ek2"]
+_data = {
+&"RESET": SubResource("Animation_3smsa"),
+&"fall": SubResource("Animation_f1ek2"),
+&"idle": SubResource("Animation_x3wgy"),
+&"jump": SubResource("Animation_tx1dd"),
+&"run": SubResource("Animation_8erm5")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_f1ek2"]
+animation = &"fall"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_tx1dd"]
+animation = &"jump"
+
+[sub_resource type="AnimationNodeBlendSpace1D" id="AnimationNodeBlendSpace1D_gymyn"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_f1ek2")
+blend_point_0/pos = 0.0
+blend_point_1/node = SubResource("AnimationNodeAnimation_tx1dd")
+blend_point_1/pos = -1.0
+blend_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_x3wgy"]
+animation = &"idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_3smsa"]
+animation = &"run"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_8erm5"]
+animation = &"run"
+
+[sub_resource type="AnimationNodeBlendSpace1D" id="AnimationNodeBlendSpace1D_f1ek2"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_x3wgy")
+blend_point_0/pos = 0.0
+blend_point_1/node = SubResource("AnimationNodeAnimation_3smsa")
+blend_point_1/pos = 1.0
+blend_point_2/node = SubResource("AnimationNodeAnimation_8erm5")
+blend_point_2/pos = -1.0
+blend_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_tx1dd"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_pu2lt"]
+advance_mode = 2
+advance_condition = &"in_air"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_x3wgy"]
+advance_mode = 2
+advance_condition = &"on_ground"
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_wpjfl"]
+states/Air/node = SubResource("AnimationNodeBlendSpace1D_gymyn")
+states/Air/position = Vector2(667, 78)
+states/GroundMove/node = SubResource("AnimationNodeBlendSpace1D_f1ek2")
+states/GroundMove/position = Vector2(488, 78)
+states/Start/position = Vector2(326, 56)
+transitions = ["Start", "GroundMove", SubResource("AnimationNodeStateMachineTransition_tx1dd"), "GroundMove", "Air", SubResource("AnimationNodeStateMachineTransition_pu2lt"), "Air", "GroundMove", SubResource("AnimationNodeStateMachineTransition_x3wgy")]
+graph_offset = Vector2(101, -41)
+
+[node name="Player" type="CharacterBody2D" unique_id=143892498]
+script = ExtResource("1_v0iea")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=323184098]
+zoom = Vector2(3, 3)
+position_smoothing_enabled = true
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+drag_left_margin = 0.07
+drag_top_margin = 0.16
+drag_right_margin = 0.07
+drag_bottom_margin = 0.05
+editor_draw_limits = true
+editor_draw_drag_margin = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1569332582]
+shape = SubResource("CircleShape2D_v0iea")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1001546848]
+texture_filter = 1
+texture = ExtResource("2_cvnsp")
+hframes = 13
+metadata/_aseprite_wizard_interface_config_ = {
+"animation_section": false,
+"pending_changes": {
+"source_uid": -1
+},
+"slice_section": false
+}
+metadata/_aseprite_wizard_config_ = {
+"embed_tex": true,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"scale": "1.0",
+"should_round_fps": true,
+"slice": "",
+"source": "res://Sprites/Blobguy.ase",
+"source_uid": 567187668185079508
+}
+metadata/_aseprite_wizard_source_file_hash_ = "3878a7a56b39b84629180dd77283b047"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1834104172]
+libraries/ = SubResource("AnimationLibrary_f1ek2")
+autoplay = &"idle"
+
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=195260961]
+tree_root = SubResource("AnimationNodeStateMachine_wpjfl")
+anim_player = NodePath("../AnimationPlayer")
+parameters/conditions/in_air = false
+parameters/conditions/on_ground = false
+parameters/Air/blend_position = 0.0
+parameters/GroundMove/blend_position = 0.0008299351
+
+[node name="JumpBuffer" type="Timer" parent="." unique_id=1805148901]
+one_shot = true
+
+[node name="CoyoteeTimer" type="Timer" parent="." unique_id=748776268]
+one_shot = true
+
+[node name="Components" type="Node" parent="." unique_id=776680423]
+
+[node name="InputComponent" type="Node" parent="Components" unique_id=1154354974]
+unique_name_in_owner = true
+script = ExtResource("3_6t5aa")
+
+[node name="MoveComponent" type="Node" parent="Components" unique_id=1279263963 node_paths=PackedStringArray("body")]
+unique_name_in_owner = true
+script = ExtResource("4_vgqql")
+body = NodePath("../..")
+jump_height = 3.0
+
+[node name="HealthComponent" type="Node" parent="Components" unique_id=1471319206]
+unique_name_in_owner = true
+script = ExtResource("5_fkybt")
+
+[node name="AnimationComponent" type="Node" parent="Components" unique_id=798071994]
+unique_name_in_owner = true
+script = ExtResource("6_x3wgy")
